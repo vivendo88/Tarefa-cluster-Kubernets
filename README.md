@@ -36,3 +36,9 @@ ssh-keygen -t rsa -b 4096 -C "seu_email@exemplo.com"
 
 wget -O ~/.ssh/vagrant https://raw.githubusercontent.com/hashicorp/vagrant/main/keys/vagrant
 chmod 600 ~/.ssh/vagrant
+
+
+
+sudo modprobe -r kvm_intel kvm
+sudo systemctl stop libvirtd 2>/dev/null
+sudo modprobe -r kvm_intel kvm
