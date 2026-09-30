@@ -19,7 +19,7 @@ resource "virtualbox_vm" "manager" {
   name      = "k8s-manager"
   image     = "https://app.vagrantup.com/ubuntu/boxes/jammy64/versions/20240115.0.0/providers/virtualbox.box"
   cpus      = 2
-  memory    = "2048 mib"
+  memory    = "1024 mib"
 
   network_adapter {
     type           = "bridged"
