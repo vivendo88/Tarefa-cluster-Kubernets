@@ -38,7 +38,14 @@ wget -O ~/.ssh/vagrant https://raw.githubusercontent.com/hashicorp/vagrant/main/
 chmod 600 ~/.ssh/vagrant
 
 
+Comando para remover tudo 
+VBoxManage unregistervm --delete "k8s-manager"
+VBoxManage unregistervm --delete "k8s-worker-1"
+VBoxManage unregistervm --delete "k8s-worker-2"
 
+terraform destroy -auto-approve
+
+#comando para desativar libvirt caso tenha qemu na maquina
 sudo modprobe -r kvm_intel kvm
 sudo systemctl stop libvirtd 2>/dev/null
 sudo modprobe -r kvm_intel kvm
