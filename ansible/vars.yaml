@@ -1,0 +1,4 @@
+ansible_user: "ubuntu"
+required_packages:
+  - curl
+  - ca-certificates

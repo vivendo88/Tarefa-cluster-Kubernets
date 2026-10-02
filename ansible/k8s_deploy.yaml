@@ -1,0 +1,62 @@
+---
+- hosts: k8s_cluster
+  become: true
+  vars_files:
+    - vars.yaml
+  tasks:
+    - name: Atualizar cache apt e instalar dependencias basicas
+      apt:
+        name: "{{ required_packages }}"
+        state: present
+        update_cache: yes
+
+- hosts: master
+  become: true
+  tasks:
+    - name: Instalar servidor K3s no no Manager
+      shell: curl -sfL https://get.k3s.io | sh -s - server --node-name k8s-manager
+      args:
+        creates: /etc/rancher/k3s/k3s.yaml
+
+    - name: Configurar permissoes de leitura para o arquivo k3s.yaml
+      file:
+        path: /etc/rancher/k3s/k3s.yaml
+        mode: '0644'
+
+    - name: Criar diretorio .kube no home do usuario ubuntu
+      file:
+        path: /home/ubuntu/.kube
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Copiar k3s.yaml para a pasta kubeconfig padrao
+      copy:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: /home/ubuntu/.kube/config
+        remote_src: yes
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Ler token do cluster gerado pelo Manager
+      slurp:
+        src: /var/lib/rancher/k3s/server/node-token
+      register: server_node_token
+
+    - name: Definir token e IP do Master como fatos globais
+      set_fact:
+        k3s_token: "{{ server_node_token.content | b64decode | trim }}"
+        master_ip: "{{ hostvars['k8s-manager']['ansible_host'] }}"
+
+- hosts: workers
+  become: true
+  tasks:
+    - name: Ingressar nós Workers no cluster
+      shell: >
+        curl -sfL https://get.k3s.io |
+        K3S_URL="https://{{ hostvars['k8s-manager']['master_ip'] }}:6443"
+        K3S_TOKEN="{{ hostvars['k8s-manager']['k3s_token'] }}"
+        sh -s - agent --node-name {{ inventory_hostname }}
+      args:
+        creates: /etc/systemd/system/k3s-agent.service
