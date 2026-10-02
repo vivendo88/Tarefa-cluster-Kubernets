@@ -172,7 +172,7 @@ ansible-playbook k8s_deploy.yaml
 
 ```
 
-<img width="812" height="1899" alt="6-executando ansible" src="https://github.com/user-attachments/assets/7edb3471-b6dd-468d-a3ba-55c51a2cbd2b" />
+<img width="1899" height="812" alt="6-executando ansible" src="https://github.com/user-attachments/assets/17a21fb2-eb46-4838-9fdf-5e752cb100e7" />
 
 
 ## 9. Acessando a VM Manager
